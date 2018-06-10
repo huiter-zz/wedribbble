@@ -28,7 +28,7 @@
       console.log(options)
       return {
         title: this.item.title,
-        path: '/pages/shot?id='+this.item.id,
+        path: '/pages/shot?id=' + this.item.id,
         imageUrl: this.item.images.normal
       }
     }

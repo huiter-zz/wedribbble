@@ -22,41 +22,53 @@
       navigationBarTitleText: 'WeDribbble'
     }
 
+    // 页面数据
     data = {
       list: []
     }
 
+    // 页面方法
     methods = {
       tap (item) {
+        // 选中的作品存为全局变量
         this.$parent.globalData.current = item
+
+        // 页面跳转
         wepy.navigateTo({
-          url: '/pages/shot'
+          url: '/pages/shot?id=' + item.id
         })
       }
     }
 
+    //  生命周期函数
     onShow() {
+      // 当页面显示且数据为空时，调用加载
       if (this.list.length === 0) {
+        // 调用小程序下拉刷新 API
         wepy.startPullDownRefresh()
       }
     }
 
+    // 当小程序下来刷新时调用自定义刷新方法
     onPullDownRefresh() {
       this.reload()
     }
 
-    reload() {
+    // 自定义刷新方法
+    async reload() {
       console.log('网络请求')
-      wepy.request('https://api.dribbble.com/i1/shots/?&sort=recent&page=1&per_page=16&access_token=858782a9e363c9a5c434f356af378811649a6d376a40ae24c19a561f627b9afa')
-      .then((res) => {
-        this.list = res.data
-        this.$apply()
-        wepy.stopPullDownRefresh()
-        wepy.showToast({
-          icon: 'none',
-          title: '刷新完成 😊',
-          duration: 2000
-        })
+      var res = await wepy.request('https://api.dribbble.com/i1/shots/?&sort=recent&page=1&per_page=16&access_token=858782a9e363c9a5c434f356af378811649a6d376a40ae24c19a561f627b9afa')
+      this.list = res.data
+      this.$apply()
+
+      // 网络请求结束后停止下拉刷新
+      wepy.stopPullDownRefresh()
+
+      // 弹出成功小提示
+      wepy.showToast({
+        icon: 'none',
+        title: '刷新完成 😊',
+        duration: 2000
       })
     }
   }

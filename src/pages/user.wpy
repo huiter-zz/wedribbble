@@ -38,6 +38,25 @@
       }
     }
 
+    async onShow() {
+      await wepy.login()
+      var data = await wepy.getUserInfo()
+      this.$parent.globalData.user = data.userInfo
+      this.user = this.$parent.globalData.user
+
+      // 获取窗口高度
+      var system = await wepy.getSystemInfo()
+      this.windowHeight = system.windowHeight
+
+      // 获取 GPS 位置并修改地图中心点
+      this.mapCtx = await wepy.createMapContext('map')
+      var gps = await wepy.getLocation({type: 'gcj02'})
+      this.longitude = gps.longitude
+      this.latitude = gps.latitude
+      this.$apply()
+    }
+
+    // 登录按钮回调
     onGotUserInfo(data) {
       this.user = data.detail.userInfo
       wepy.showToast({
@@ -45,22 +64,6 @@
         title: '欢迎回来 😊',
         duration: 2000
       })
-    }
-
-    async onShow() {
-      await wepy.login()
-      var data = await wepy.getUserInfo()
-      this.$parent.globalData.user = data.userInfo
-      this.user = this.$parent.globalData.user
-
-      var system = await wepy.getSystemInfo()
-      this.windowHeight = system.windowHeight
-
-      this.mapCtx = await wepy.createMapContext('map')
-      var gps = await wepy.getLocation({type: 'gcj02'})
-      this.longitude = gps.longitude
-      this.latitude = gps.latitude
-      this.$apply()
     }
   }
 </script>
