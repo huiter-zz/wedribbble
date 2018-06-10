@@ -1,0 +1,66 @@
+<style lang="less">
+</style>
+<template>
+  <view class="container" style="text-align:center;background-color:#eaeaea;min-height:{{windowHeight}}px">
+    <view wx:if="{{user.nickName}}">
+      <image style="margin-top:30px;width: 200rpx;height: 200rpx;border-radius:100rpx" src="{{user.avatarUrl}}"/>
+    </view>
+    <view wx:if="{{!user.nickName}}" style="height: 100rpx">
+      
+    </view>
+    <text style="line-height:100rpx">{{user.nickName}}</text>
+    <button style="width:200rpx;height:60rpx;font-size:24rpx;margin-bottom:20rpx;" wx:if="{{!user.nickName}}" open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="onGotUserInfo">登录</button>
+    <button style="width:200rpx;height:60rpx;font-size:24rpx;margin-bottom:20rpx;" wx:if="{{user.nickName}}" open-type="contact">客服</button>
+    <button style="width:200rpx;height:60rpx;font-size:24rpx;margin-bottom:20rpx;" wx:if="{{user.nickName}}" @tap="logout()">退出</button>
+    <map id="map" style="margin:25rpx 25rpx 25rpx 25rpx; width: 680rpx;height: 340rpx;border:10rpx solid #ffffff" show-location latitude="{{latitude}}" longitude="{{longitude}}"/>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+
+  export default class User extends wepy.page {
+    config = {
+      navigationBarTitleText: 'WeDribbble'
+    }
+
+    data = {
+      user: {},
+      latitude: '',
+      longitude: '',
+      mapHeight: 500,
+      windowHeight: 750
+    }
+
+    methods = {
+      logout () {
+        this.user = {}
+      }
+    }
+
+    onGotUserInfo(data) {
+      this.user = data.detail.userInfo
+      wepy.showToast({
+        icon: 'none',
+        title: '欢迎回来 😊',
+        duration: 2000
+      })
+    }
+
+    async onShow() {
+      await wepy.login()
+      var data = await wepy.getUserInfo()
+      this.$parent.globalData.user = data.userInfo
+      this.user = this.$parent.globalData.user
+
+      var system = await wepy.getSystemInfo()
+      this.windowHeight = system.windowHeight
+
+      this.mapCtx = await wepy.createMapContext('map')
+      var gps = await wepy.getLocation({type: 'gcj02'})
+      this.longitude = gps.longitude
+      this.latitude = gps.latitude
+      this.$apply()
+    }
+  }
+</script>

@@ -1,0 +1,36 @@
+<style lang="less">
+</style>
+<template>
+  <view class="container" style="text-align:center">
+     <image style="width: 750rpx;height:480rpx" mode="aspectFit" src="{{item.images.normal}}" lazy-load="true"></image>
+     <button style="width:200rpx;height:60rpx;font-size:24rpx;margin-bottom:20rpx;" open-type="share">分享</button>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+
+  export default class Shot extends wepy.page {
+    config = {
+      navigationBarTitleText: '作品'
+    }
+
+    data = {
+      item: {}
+    }
+
+    async onLoad(options) {
+      console.log(this.$parent.globalData.current)
+      this.item = this.$parent.globalData.current
+    }
+
+    onShareAppMessage(options) {
+      console.log(options)
+      return {
+        title: this.item.title,
+        path: '/pages/shot?id='+this.item.id,
+        imageUrl: this.item.images.normal
+      }
+    }
+  }
+</script>

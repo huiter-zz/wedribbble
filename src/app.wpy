@@ -1,0 +1,71 @@
+<style lang="less">
+</style>
+
+<script>
+import wepy from 'wepy'
+import 'wepy-async-function'
+
+export default class extends wepy.app {
+  config = {
+    pages: [
+      'pages/index',
+      'pages/user',
+      'pages/shot'
+    ],
+    window: {
+      backgroundColor: '#fafafa',
+      backgroundTextStyle: 'dark',
+      navigationBarBackgroundColor: '#232323',
+      navigationBarTitleText: 'WeChat',
+      navigationBarTextStyle: '#ffffff',
+      enablePullDownRefresh: true
+    },
+    tabBar: {
+      color: '#ababab',
+      selectedColor: '#515151',
+      list: [{
+        pagePath: 'pages/index',
+        iconPath: '/resources/home.png',
+        selectedIconPath: '/resources/home_selected.png',
+        text: '作品'
+      }, {
+        pagePath: 'pages/user',
+        iconPath: '/resources/user.png',
+        selectedIconPath: '/resources/user_selected.png',
+        text: '我'
+      }]
+    }
+  }
+
+  globalData = {
+
+  }
+
+  constructor () {
+    super()
+    this.use('promisify')
+  }
+
+  onLaunch(options) {
+
+  }
+
+  onShow(options) {
+    wepy.showToast({
+      icon: 'none',
+      title: '' + options.scene + ' 路径：' + options.path,
+      duration: 2000
+    })
+    if (options.shareTicket) {
+      wepy.getShareInfo()
+    }
+  }
+
+  onHide() {
+      // Do something when hide.
+  }
+  onError(msg) {
+    console.log(msg)
+  }
+}
+</script>
