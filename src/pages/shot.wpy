@@ -19,13 +19,12 @@
       item: {}
     }
 
-    async onLoad(options) {
-      console.log(this.$parent.globalData.current)
+    onLoad(options) {
       this.item = this.$parent.globalData.current
     }
 
+    // 定义分享内容
     onShareAppMessage(options) {
-      console.log(options)
       return {
         title: this.item.title,
         path: '/pages/shot?id=' + this.item.id,
