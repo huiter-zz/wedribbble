@@ -1,9 +1,58 @@
 <style lang="less">
+.media{
+  text-align:left;
+  margin-top:10rpx;
+  margin-bottom:10rpx;
+}
+.media-body, .media-left, .media-right {
+  display: table-cell;
+  vertical-align: top;
+}
+.avatar{
+  width:72rpx;height:72rpx;border-radius:50%;border:1rpx solid #fafafa;display:inline-block;margin:0px 10rpx;box-sizing:border-box;background-color:#f1f1f1;
+}
+.title{
+  color:#565656;font-size:28rpx;line-height:36rpx;height:36rpx;display:block;
+}
+.nickname{
+  color:#898989;font-size:24rpx;height:36rpx;display:block;
+}
+.color{
+  color:#898989;font-size:24rpx;height:36rpx;display:block;
+}
+.action{
+  color:#565656;font-size:24rpx;line-height:80rpx;height:80rpx;display:inline-block;
+}
 </style>
 <template>
   <view class="container" style="text-align:center">
-     <image style="width: 750rpx;height:480rpx" mode="aspectFit" src="{{item.images.normal}}" lazy-load="true"></image>
-     <button style="width:200rpx;height:60rpx;font-size:24rpx;margin-bottom:20rpx;" open-type="share">分享</button>
+    <image style="width:750rpx;height:500rpx;background-color:#f1f1f1;" mode="aspectFill" src="{{item.images.hidpi ? item.images.hidpi : item.images.normal}}" lazy-load="true"></image>
+    <view class="media">
+      <view class="media-left">
+        <image class="avatar" mode="aspectFit" src="{{item.user.avatar_url}}"></image>
+      </view>
+      <view class="media-body">
+        <text class="title">{{item.title}}</text>
+        <text class="nickname">{{item.user.name}} 创作于 {{item.published_at}}</text>
+      </view>
+    </view>
+    <view style="background-color:#fafafa;padding:20rpx;">
+      <zan-row>
+        <repeat for='{{item.color_hexes}}'  key="index" index="index" item="color">
+          <zan-col col='2'>
+            <view style="background-color:#{{color}};width:100%;height:40rpx;"></view>
+          </zan-col>
+        </repeat>
+      </zan-row>
+    </view>
+    <view style="background-color:#f5f5f5">
+      <zan-row>
+        <zan-col col='8'><text class="action">喜爱 {{item.likes_count}}</text></zan-col>
+        <zan-col col='8'><text class="action">浏览 {{item.views_count}}</text></zan-col>
+        <zan-col col='8'><text class="action">评论 {{item.comments_count}}</text></zan-col>
+      </zan-row>
+    </view>
+    <button style="width:200rpx;height:60rpx;font-size:24rpx;margin-top:200rpx;" open-type="share">分享</button>
   </view>
 </template>
 
@@ -12,15 +61,35 @@
 
   export default class Shot extends wepy.page {
     config = {
-      navigationBarTitleText: '作品'
+      navigationBarTitleText: '作品',
+      'usingComponents': {
+        'zan-row': '../zanui/row/index',
+        'zan-col': '../zanui/col/index',
+        'zan-tab': '../zanui/tab/index',
+        'zan-toptips': '../zanui/toptips/index'
+      }
     }
 
     data = {
+      shotid: '',
       item: {}
     }
 
-    onLoad(options) {
-      this.item = this.$parent.globalData.current
+    // 当小程序下拉刷新时调用自定义刷新方法
+    onPullDownRefresh() {
+      this.reload()
+    }
+
+    async onLoad(options) {
+      this.shotid = options.id
+      this.reload()
+    }
+
+    async reload() {
+      var res = await wepy.request('https://api.dribbble.com/i1/shots/' + this.shotid + '?access_token=858782a9e363c9a5c434f356af378811649a6d376a40ae24c19a561f627b9afa')
+      this.item = res.data
+      this.$apply()
+      wepy.stopPullDownRefresh()
     }
 
     // 定义分享内容

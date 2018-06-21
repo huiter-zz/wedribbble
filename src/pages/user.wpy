@@ -8,11 +8,12 @@
     <view wx:if="{{!user.nickName}}" style="height: 100rpx">
       
     </view>
-    <text style="line-height:100rpx">{{user.nickName}}</text>
+    <text style="line-height:100rpx;">{{user.nickName}}</text>
     <button style="width:200rpx;height:60rpx;font-size:24rpx;margin-bottom:20rpx;" wx:if="{{!user.nickName}}" open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="onGotUserInfo">登录</button>
     <button style="width:200rpx;height:60rpx;font-size:24rpx;margin-bottom:20rpx;" wx:if="{{user.nickName}}" open-type="contact">客服</button>
     <button style="width:200rpx;height:60rpx;font-size:24rpx;margin-bottom:20rpx;" wx:if="{{user.nickName}}" @tap="logout()">退出</button>
     <map id="map" style="margin:25rpx 25rpx 25rpx 25rpx; width: 680rpx;height: 340rpx;border:10rpx solid #ffffff" show-location latitude="{{latitude}}" longitude="{{longitude}}"/>
+
   </view>
 </template>
 

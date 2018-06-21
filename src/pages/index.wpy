@@ -1,35 +1,65 @@
-<style lang="less">
+<style lang='less'>
 </style>
 <template>
-  <view class="container">
-    <view style="background-color:#eaeaea;padding:20rpx 10rpx 0rpx 10rpx">
-      <repeat for="{{list}}">
-        <view style="width: 365rpx;height: 280rpx;display:inline-block;">
-            <view style="padding:10rpx 10rpx 10rpx 10rpx" @tap="tap({{item}})">
-              <image style="width: 100%;max-height:260rpx;background-color:#ffffff" mode="aspectFit" src="{{item.images.normal}}" lazy-load="true"></image>
-            </view>
-        </view>
-      </repeat>
+  <view class='container'>
+    <zan-toptips
+      id='zan-toptips'
+      contetn='{{ content }}'
+    />
+    <view>
+      <zan-tab
+        list='{{ tabs }}'
+        selected-id='{{ selectedId }}'
+        height='45'
+        bindtabchange='handleTabChange'
+      />
+      <view style="padding:20rpx;background-color:#fafafa;min-height:1000rpx">
+        <zan-row>
+          <repeat for='{{list}}'>
+            <zan-col col='12'>
+              <view @tap='tapItem({{item}})' style="height:260rpx;padding:20rpx;box-sizing:content-box;">
+                <image style='width: 100%;height:260rpx;background-color:#ffffff' mode='widthFit' src='{{item.images.normal}}' lazy-load='true'></image>
+              </view>
+            </zan-col>
+          </repeat>
+        </zan-row>
+      </view>
     </view>
   </view>
 </template>
 
 <script>
   import wepy from 'wepy'
+  // import Toptips from '../zanui/toptips/index'
 
   export default class Index extends wepy.page {
     config = {
-      navigationBarTitleText: 'WeDribbble'
+      navigationBarTitleText: 'WeDribbble',
+      'usingComponents': {
+        'zan-row': '../zanui/row/index',
+        'zan-col': '../zanui/col/index',
+        'zan-tab': '../zanui/tab/index',
+        'zan-toptips': '../zanui/toptips/index'
+      }
     }
 
     // 页面数据
     data = {
-      list: []
+      list: [],
+      tabs: [{
+        id: 'popular',
+        title: '热门'
+      }, {
+        id: 'recent',
+        title: '最新'
+      }],
+      selectedId: 'popular',
+      page: 1
     }
 
     // 页面方法
     methods = {
-      tap (item) {
+      tapItem (item) {
         // 选中的作品存为全局变量
         this.$parent.globalData.current = item
 
@@ -37,6 +67,12 @@
         wepy.navigateTo({
           url: '/pages/shot?id=' + item.id
         })
+      },
+      handleTabChange({detail}) {
+        if (this.selectedId !== detail) {
+          this.selectedId = detail
+          wepy.startPullDownRefresh()
+        }
       }
     }
 
@@ -49,15 +85,22 @@
       }
     }
 
-    // 当小程序下来刷新时调用自定义刷新方法
+    // 当小程序下拉刷新时调用自定义刷新方法
     onPullDownRefresh() {
+      this.page = 1
       this.reload()
+    }
+
+    // 当小程序上拉加载更多时调用自定义加载方法
+    onReachBottom() {
+      this.page++
+      this.loadmore()
     }
 
     // 自定义刷新方法
     async reload() {
       console.log('网络请求')
-      var res = await wepy.request('https://api.dribbble.com/i1/shots/?&sort=recent&page=1&per_page=16&access_token=858782a9e363c9a5c434f356af378811649a6d376a40ae24c19a561f627b9afa')
+      var res = await wepy.request('https://api.dribbble.com/i1/shots/?&sort=' + this.selectedId + '&page=' + this.page + '&per_page=32&access_token=858782a9e363c9a5c434f356af378811649a6d376a40ae24c19a561f627b9afa')
       this.list = res.data
       this.$apply()
 
@@ -70,6 +113,16 @@
         title: '刷新完成 😊',
         duration: 2000
       })
+    }
+
+    // 自定义加载方法
+    async loadmore() {
+      console.log('网络请求')
+      wepy.showLoading()
+      var res = await wepy.request('https://api.dribbble.com/i1/shots/?&sort=' + this.selectedId + '&page=' + this.page + '&per_page=32&access_token=858782a9e363c9a5c434f356af378811649a6d376a40ae24c19a561f627b9afa')
+      this.list = this.list.concat(res.data)
+      this.$apply()
+      wepy.hideLoading()
     }
   }
 </script>

@@ -1,6 +1,6 @@
 <style lang="less">
+@import "./zanui/index.wxss";
 </style>
-
 <script>
 import wepy from 'wepy'
 import 'wepy-async-function'
@@ -18,7 +18,8 @@ export default class extends wepy.app {
       navigationBarBackgroundColor: '#232323',
       navigationBarTitleText: 'WeChat',
       navigationBarTextStyle: '#ffffff',
-      enablePullDownRefresh: true
+      enablePullDownRefresh: true,
+      onReachBottomDistance: 50
     },
     tabBar: {
       color: '#ababab',
@@ -51,6 +52,7 @@ export default class extends wepy.app {
   }
 
   onShow(options) {
+    /*
     wepy.showToast({
       icon: 'none',
       title: '' + options.scene + ' 路径：' + options.path,
@@ -59,6 +61,7 @@ export default class extends wepy.app {
     if (options.shareTicket) {
       wepy.getShareInfo()
     }
+    */
   }
 
   onHide() {
