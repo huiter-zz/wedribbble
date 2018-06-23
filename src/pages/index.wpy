@@ -100,9 +100,11 @@
     // 自定义刷新方法
     async reload() {
       console.log('网络请求')
-      var res = await wepy.request('https://api.dribbble.com/i1/shots/?&sort=' + this.selectedId + '&page=' + this.page + '&per_page=32&access_token=858782a9e363c9a5c434f356af378811649a6d376a40ae24c19a561f627b9afa')
-      this.list = res.data
-      this.$apply()
+      var res = await wepy.request('https://api.dribbble.com/i1/shots/?&sort=' + this.selectedId + '&page=' + this.page + '&per_page=16&access_token=858782a9e363c9a5c434f356af378811649a6d376a40ae24c19a561f627b9afa')
+      if (res.data.length) {
+        this.list = res.data
+        this.$apply()
+      }
 
       // 网络请求结束后停止下拉刷新
       wepy.stopPullDownRefresh()
@@ -119,9 +121,12 @@
     async loadmore() {
       console.log('网络请求')
       wepy.showLoading()
-      var res = await wepy.request('https://api.dribbble.com/i1/shots/?&sort=' + this.selectedId + '&page=' + this.page + '&per_page=32&access_token=858782a9e363c9a5c434f356af378811649a6d376a40ae24c19a561f627b9afa')
-      this.list = this.list.concat(res.data)
-      this.$apply()
+      var res = await wepy.request('https://api.dribbble.com/i1/shots/?&sort=' + this.selectedId + '&page=' + this.page + '&per_page=16&access_token=858782a9e363c9a5c434f356af378811649a6d376a40ae24c19a561f627b9afa')
+      if (res.data.length) {
+        this.list = this.list.concat(res.data)
+        this.$apply()
+      }
+
       wepy.hideLoading()
     }
   }

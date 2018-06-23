@@ -24,6 +24,17 @@ module.exports = {
     }
   },
   plugins: {
+    /*
+    'replace': {
+      filter: /moment\.js$/,
+      config: {
+          find: /([\w\[\]a-d\.]+)\s*instanceof Function/g,
+          replace: function (matchs, word) {
+              return ' typeof ' + word + " ==='function' ";
+          }
+      }
+    }
+    */
   },
   appConfig: {
     noPromiseAPI: ['createSelectorQuery']

@@ -33,10 +33,10 @@
       </view>
       <view class="media-body">
         <text class="title">{{item.title}}</text>
-        <text class="nickname">{{item.user.name}} 创作于 {{item.published_at}}</text>
+        <text wx:if="{{item.user.name}}" class="nickname">{{item.user.name}} 创作于 {{item.createTime}}</text>
       </view>
     </view>
-    <view style="background-color:#fafafa;padding:20rpx;">
+    <view style="background-color:#fafafa;padding:20rpx;height:80rpx">
       <zan-row>
         <repeat for='{{item.color_hexes}}'  key="index" index="index" item="color">
           <zan-col col='2'>
@@ -52,12 +52,14 @@
         <zan-col col='8'><text class="action">评论 {{item.comments_count}}</text></zan-col>
       </zan-row>
     </view>
-    <button style="width:200rpx;height:60rpx;font-size:24rpx;margin-top:200rpx;" open-type="share">分享</button>
+    <button style="width:200rpx;height:60rpx;font-size:24rpx;margin-top:80rpx;margin-bottom:60rpx;" open-type="share">分享</button>
+    <image wx:if="{{ pageStack === 1 }}" @tap='goHome()' style="width: 60px; height: 60px; border-radius:50%" mode="aspectFit" src="../resources/wedribbble.png"></image>
   </view>
 </template>
 
 <script>
   import wepy from 'wepy'
+  import moment from 'moment'
 
   export default class Shot extends wepy.page {
     config = {
@@ -72,7 +74,16 @@
 
     data = {
       shotid: '',
-      item: {}
+      item: {},
+      pageStack: 1
+    }
+
+    methods = {
+      goHome () {
+        wepy.switchTab({
+          url: 'index'
+        })
+      }
     }
 
     // 当小程序下拉刷新时调用自定义刷新方法
@@ -81,6 +92,7 @@
     }
 
     async onLoad(options) {
+      this.pageStack = getCurrentPages().length
       this.shotid = options.id
       this.reload()
     }
@@ -88,6 +100,7 @@
     async reload() {
       var res = await wepy.request('https://api.dribbble.com/i1/shots/' + this.shotid + '?access_token=858782a9e363c9a5c434f356af378811649a6d376a40ae24c19a561f627b9afa')
       this.item = res.data
+      this.item.createTime = moment(this.item.published_at).format('YYYY-MM-DD HH:mm')
       this.$apply()
       wepy.stopPullDownRefresh()
     }
